@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: ap-northeast-2
+  AWS_REGION: us-east-1
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -46,7 +46,7 @@ jobs:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
           REGISTRY_ALIAS: i8c7e5c5
           REPOSITORY: crawling_server
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: crawling_server_image
         run: |
           # Build a docker container and
           # push it to ECR so that it can
