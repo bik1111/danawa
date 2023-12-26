@@ -4,4 +4,3 @@ requests==2.31.0
 selenium==3.14.0
 sentence-transformers==2.2.2
 torch==1.10.0
-tensorflow==2.11.*
