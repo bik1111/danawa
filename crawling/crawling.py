@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import ast
 import time
+import logging
 import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -17,18 +18,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from sentence_transformers import SentenceTransformer
 
-chrome_options = Options()
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')               # headless
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--disable-gpu')
 
-#for Docker
-#chrome_options.add_argument('headless')
-#chrome_options.add_argument('window-size=1920x1080')
-#chrome_options.add_argument("disable-gpu")
-#chrome_options.add_argument(f'user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36')
+driver = webdriver.Chrome(executable_path = "/app/chrome/chromedriver" , chrome_options=chrome_options)
 
-#chromedriver_path = "/app/chrome/chromedriver"
-#driver = webdriver.Chrome(executable_path = chromedriver_path, options=chrome_options)
 
-driver = webdriver.Chrome(options=chrome_options)
+#driver = webdriver.Chrome(options=chrome_options)
 
 
 data_list = []
@@ -151,22 +150,24 @@ if __name__ == "__main__":
     time.sleep(3)
 
     # 리뷰 크롤링
-    print("start review crawling")
+    logging('start review crawling')
     review_crawl()
 
     # CSV 파일로 저장
     save_to_csv(data_list)
 
     # CSV 파일 읽기
-    print("start read csv")
+    logging('start reading csv')
     df = pd.read_csv('output.csv')
 
     # Convert the 'reviews' column from string representation to actual lists
     df['reviews'] = df['reviews'].apply(eval)
 
     # Embedding
+    logging('start embedding')
     sentence_embeddings = model.encode(df['reviews'].apply(lambda x: " ".join(x)).to_numpy().tolist())
 
+    logging('start saving csv with embeddings vector')
     # Convert the embeddings to a list and assign to 'hf_embeddings' column
     df['hf_embeddings'] = sentence_embeddings.tolist()
 
@@ -174,7 +175,7 @@ if __name__ == "__main__":
     df.to_csv('output.csv', index=False)
 
     #cosine similarity 구하기
-    print(get_query_sim_top_k("대학생들이 사용하기에 좋은 노트북", model, df, 5))
+    #print(get_query_sim_top_k("대학생들이 사용하기에 좋은 노트북", model, df, 5))
 
 
 

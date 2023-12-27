@@ -14,13 +14,15 @@ RUN google-chrome --version
 # Install ChromeDriver.
 RUN apt-get install wget
 RUN apt-get install -yqq unzip
-RUN wget -O /tmp/chromedriver.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-
+RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/` curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 RUN mkdir chrome
-RUN unzip /tmp/chromedriver.zip chromedriver-linux64/chromedriver -d /app/chrome
+RUN unzip /tmp/chromedriver.zip chromedriver -d /app/chrome
+
 
 COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
+
+WORKDIR /app/crawling
 
 CMD [ "python3", "crawling.py" ]
