@@ -27,9 +27,6 @@ chrome_options.add_argument('--disable-gpu')
 driver = webdriver.Chrome(executable_path = "/app/chrome/chromedriver" , chrome_options=chrome_options)
 
 
-#driver = webdriver.Chrome(options=chrome_options)
-
-
 data_list = []
 
 def crawl_page(url):
@@ -140,34 +137,35 @@ def get_query_sim_top_k(query, model, df, top_k):
     return top_results_df
 
 
+
 initial_url = "https://search.shopping.naver.com/search/category/100005307"
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
 
-if __name__ == "__main__":
-
+def main():
+    print("crawling start")
     # 크롤링 시작
     crawl_page(initial_url)
     time.sleep(3)
 
     # 리뷰 크롤링
-    logging('start review crawling')
+    logging.infoing('start review crawling')
     review_crawl()
 
     # CSV 파일로 저장
     save_to_csv(data_list)
 
     # CSV 파일 읽기
-    logging('start reading csv')
+    logging.info('start reading csv')
     df = pd.read_csv('output.csv')
 
     # Convert the 'reviews' column from string representation to actual lists
     df['reviews'] = df['reviews'].apply(eval)
 
     # Embedding
-    logging('start embedding')
+    logging.info('start embedding')
     sentence_embeddings = model.encode(df['reviews'].apply(lambda x: " ".join(x)).to_numpy().tolist())
 
-    logging('start saving csv with embeddings vector')
+    logging.info('start saving csv with embeddings vector')
     # Convert the embeddings to a list and assign to 'hf_embeddings' column
     df['hf_embeddings'] = sentence_embeddings.tolist()
 
@@ -176,6 +174,10 @@ if __name__ == "__main__":
 
     #cosine similarity 구하기
     #print(get_query_sim_top_k("대학생들이 사용하기에 좋은 노트북", model, df, 5))
+
+if __name__ == "__main__":
+    main()
+
 
 
 

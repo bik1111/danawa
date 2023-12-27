@@ -25,4 +25,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /app/crawling
 
-CMD [ "python3", "crawling.py" ]
+CMD [ "python3", "healthCheck.py" ]

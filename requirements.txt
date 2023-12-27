@@ -6,3 +6,5 @@ sentence-transformers==2.2.2
 torch==1.10.0
 boto3==1.34.7
 python-decouple==3.8
+Flask==3.0.0
+Werkzeug==3.0.1
