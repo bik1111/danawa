@@ -40,5 +40,4 @@ def load_data_from_dynamo():
                 }
             )
 
-if __name__ == "__main__":
-    load_data_from_dynamo()
+

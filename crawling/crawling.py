@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import csv
+import logging
 import requests
 import torch
 from sentence_transformers import SentenceTransformer, util
@@ -18,18 +19,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from sentence_transformers import SentenceTransformer
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')               # headless
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
-chrome_options.add_argument('--disable-gpu')
-
-driver = webdriver.Chrome(executable_path = "/app/chrome/chromedriver" , chrome_options=chrome_options)
-
-
 data_list = []
 
 def crawl_page(url):
+
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-gpu')
+    #chromedriver_path = "./chrome/chromedriver"
+    #driver = webdriver.Chrome(executable_path = chromedriver_path, options=chrome_options)
+
+    driver = webdriver.Chrome(options=chrome_options)
 
     driver.implicitly_wait(3)
     driver.get(url)
@@ -141,14 +143,14 @@ def get_query_sim_top_k(query, model, df, top_k):
 initial_url = "https://search.shopping.naver.com/search/category/100005307"
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
 
-def main():
-    print("crawling start")
+def crawl_product_info():
+    logging.info("crawling start")
     # 크롤링 시작
     crawl_page(initial_url)
     time.sleep(3)
 
     # 리뷰 크롤링
-    logging.infoing('start review crawling')
+    logging.info('start review crawling')
     review_crawl()
 
     # CSV 파일로 저장
@@ -174,10 +176,4 @@ def main():
 
     #cosine similarity 구하기
     #print(get_query_sim_top_k("대학생들이 사용하기에 좋은 노트북", model, df, 5))
-
-if __name__ == "__main__":
-    main()
-
-
-
 
