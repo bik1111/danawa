@@ -28,10 +28,10 @@ def crawl_page(url):
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
-    #chromedriver_path = "./chrome/chromedriver"
-    #driver = webdriver.Chrome(executable_path = chromedriver_path, options=chrome_options)
+    chromedriver_path = "../chrome/chromedriver"
+    driver = webdriver.Chrome(executable_path = chromedriver_path, options=chrome_options)
 
-    driver = webdriver.Chrome(options=chrome_options)
+    #driver = webdriver.Chrome(options=chrome_options)
 
     driver.implicitly_wait(3)
     driver.get(url)
@@ -121,27 +121,12 @@ def review_crawl():
         item['reviews'] = cleaned_reviews
         time.sleep(2)
 
-# TOP 5 추천 상품
-def get_query_sim_top_k(query, model, df, top_k):
-    # Encode the query
-    query_encode = model.encode(query)
-
-    # Convert string representations of lists to actual lists
-    df['hf_embeddings'] = df['hf_embeddings'].apply(ast.literal_eval)
-
-    # Compute cosine similarity
-    cos_scores = util.pytorch_cos_sim(query_encode, torch.tensor(df['hf_embeddings'].tolist()))[0]
-
-    # Get top k results
-    top_results_idx = torch.topk(cos_scores, k=top_k).indices.cpu().numpy()
-    top_results_df = df.iloc[top_results_idx][['product_name', 'product_link_url']]
-
-    return top_results_df
-
 
 
 initial_url = "https://search.shopping.naver.com/search/category/100005307"
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
+
+
 
 def crawl_product_info():
     logging.info("crawling start")

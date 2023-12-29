@@ -33,6 +33,13 @@ def load_data():
     return jsonify(message='Loading data completed successfully')
 
 
+@app.route('/api/recommend', methods=['GET'])
+def recommend_laptop():
+    # Add any additional logic for recommending here
+    return jsonify(message='Recommendation completed successfully')
+
+
+
 
 
 if __name__ == '__main__':
