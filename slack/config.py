@@ -1,2 +1,7 @@
-app_token = 'xapp-1-A05HJKECNTE-5596688308132-4706ffc2884c05ca43336e8107df023467ad6924c8a40c7c7cdb43fb8b3f6718'
-bot_token =  'xoxb-5596625379908-5594230382131-U9RRhuES2jHWYnbHJ7iDbDDC'
+from decouple import config
+# Set your AWS credentials
+app_token = config('app_token')
+bot_token = config('bot_token')
+
+print(app_token)
+print(bot_token)
