@@ -22,7 +22,6 @@ RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/src/chrome
 COPY app ./app
 
 COPY requirements.txt ./
-COPY .env ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
