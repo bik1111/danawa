@@ -1,15 +1,9 @@
 import decimal
-import boto3
-from decouple import config
 import time
-import ast
+import boto3
 import csv
 from decimal import Decimal
 import json
-
-# Set your AWS credentials
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 
 
 def load_data_from_dynamo():
