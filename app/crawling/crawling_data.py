@@ -85,21 +85,20 @@ def crawl_page(url):
         logging.error(f"Crawling error: {str(e)}")
     finally:
         logging.info("Crawling end!!")
+        logging.info(data_list[0])
         driver.quit()
 
 
 
 def save_to_csv(data_list, file_path='output.csv'):
     with open(file_path, mode='w', encoding='utf-8', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=data_list[0].keys())
+        writer = csv.DictWriter(file, fieldnames=data_list.keys())
 
         # CSV 파일 헤더 쓰기
         writer.writeheader()
 
         # 데이터 쓰기
         writer.writerows(data_list)
-
-    return None
 
 
 # ### 3-1) 리뷰 수집 및 한글만 남기기
@@ -121,7 +120,6 @@ def review_crawl():
         item['reviews'] = cleaned_reviews
         time.sleep(2)
 
-    return None;
 
 
 
