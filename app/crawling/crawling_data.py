@@ -26,64 +26,65 @@ url = "https://search.shopping.naver.com/search/category/100005307"
 
 
 def crawl_page(url):
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--window-size=1280x1696')
+        chrome_options.add_argument('--hide-scrollbars')
+        chrome_options.add_argument('--enable-logging')
+        chrome_options.add_argument('--single-process')
+        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
 
-    chrome_options = Options()
+        service = ChromeService(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-gpu')
-    chrome_options.add_argument('--window-size=1280x1696')
-    chrome_options.add_argument('--hide-scrollbars')
-    chrome_options.add_argument('--enable-logging')
-    chrome_options.add_argument('--single-process')
-    chrome_options.add_argument('--ignore-certificate-errors')
-    chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+        logging.info("Crawling start!!")
 
-    service = ChromeService(ChromeDriverManager().install())
+        driver.implicitly_wait(3)
+        driver.get(url)
 
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+        last_height = driver.execute_script("return document.body.scrollHeight")
 
-    logging.info("crawling start!!")
+        for page_number in range(1, 7):  # 최대 10 페이지까지 크롤링
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)
+            new_height = driver.execute_script("return document.body.scrollHeight")
 
-    driver.implicitly_wait(3)
-    driver.get(url)
+            page_source = driver.page_source
+            soup = BeautifulSoup(page_source, 'html.parser')
+            products = soup.select('div.product_item__MDtDF')
 
-    last_height = driver.execute_script("return document.body.scrollHeight")
+            for v in products:
+                item_name = v.select_one('a.product_link__TrAac.linkAnchor').get('title')
+                item_price = v.select_one('span.price_num__S2p_v em').text
+                item_specs = v.select('a.product_detail__oWDMs.product_bar__dHjkA.linkAnchor')
+                specs = ', '.join([item_spec.text for item_spec in item_specs])
+                item_href = v.select_one('a.product_link__TrAac.linkAnchor').get('href')
 
-    for page_number in range(1, 7):  # 최대 10 페이지까지 크롤링
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
-        new_height = driver.execute_script("return document.body.scrollHeight")
+                data_list.append({
+                    "product_name": item_name,
+                    "product_price": item_price,
+                    "product_spec": specs,
+                    "product_link_url": item_href,
+                })
 
-        page_source = driver.page_source
-        soup = BeautifulSoup(page_source, 'html.parser')
-        products = soup.select('div.product_item__MDtDF')
+            if new_height == last_height:
+                break
 
-        for v in products:
-            item_name = v.select_one('a.product_link__TrAac.linkAnchor').get('title')
-            item_price = v.select_one('span.price_num__S2p_v em').text
-            item_specs = v.select('a.product_detail__oWDMs.product_bar__dHjkA.linkAnchor')
-            specs = ', '.join([item_spec.text for item_spec in item_specs])
-            item_href = v.select_one('a.product_link__TrAac.linkAnchor').get('href')
+            # 다음 페이지 버튼 클릭
+            next_page_selector = f"#content > div.style_content__xWg5l > div.pagination_pagination__fsf34 > div > a:nth-child({page_number + 1})"
+            next_page_button = driver.find_element(By.CSS_SELECTOR, next_page_selector)
+            next_page_button.click()
+            time.sleep(2)
+            last_height = new_height
 
-            data_list.append({
-                "product_name": item_name,
-                "product_price": item_price,
-                "product_spec": specs,
-                "product_link_url": item_href,
-            })
-
-        if new_height == last_height:
-            break
-
-        # 다음 페이지 버튼 클릭
-        next_page_selector = f"#content > div.style_content__xWg5l > div.pagination_pagination__fsf34 > div > a:nth-child({page_number + 1})"
-        next_page_button = driver.find_element(By.CSS_SELECTOR, next_page_selector)
-        next_page_button.click()
-        time.sleep(2)
-        last_height = new_height
-
-    driver.quit()
+    except Exception as e:
+        logging.error(f"Crawling error: {str(e)}")
+    finally:
+        driver.quit()
 
 
 

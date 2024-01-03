@@ -17,11 +17,15 @@ def health_check():
 
 @app.route('/api/crawling', methods=['GET'])
 def crawl_data():
-    # Add any additional logic for crawling here
-    crawl_product_info()
+    try:
+        # 크롤링 함수 호출
+        crawl_product_info()
 
-    # Return a response indicating the crawling is complete
-    return jsonify(message='Crawling completed successfully')
+        # 크롤링 결과를 JSON 형태로 반환
+        return jsonify(message='Crawling completed successfully')
+    except Exception as e:
+        logging.error(f"Crawling error: {str(e)}")
+        return jsonify(error='Crawling failed'), 500
 
 
 @app.route('/api/load_data', methods=['GET'])
