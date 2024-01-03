@@ -85,9 +85,7 @@ def crawl_page(url):
         logging.error(f"Crawling error: {str(e)}")
     finally:
         logging.info("Crawling end!!")
-        logging.info(data_list[0])
         driver.quit()
-
 
 
 def save_to_csv(data_list, file_path='output.csv'):
