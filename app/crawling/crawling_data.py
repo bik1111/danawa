@@ -84,6 +84,8 @@ def crawl_page(url):
     except Exception as e:
         logging.error(f"Crawling error: {str(e)}")
     finally:
+        logging.info("Crawling end!!")
+        logging.info(data_list[0])
         driver.quit()
 
 
@@ -101,6 +103,8 @@ def save_to_csv(data_list, file_path='output.csv'):
 
 # ### 3-1) 리뷰 수집 및 한글만 남기기
 def review_crawl():
+
+    logging.info(data_list[0])
     for item in data_list:
         link_url = item['product_link_url']
 
@@ -116,6 +120,7 @@ def review_crawl():
         # 리뷰를 해당 상품의 딕셔너리에 추가
         item['reviews'] = cleaned_reviews
         time.sleep(2)
+
 
 
 
