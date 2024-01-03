@@ -4,41 +4,53 @@ import re
 import csv
 import logging
 import requests
-import torch
 from sentence_transformers import SentenceTransformer, util
 import pandas as pd
-import ast
 import time
 import logging
-import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from sentence_transformers import SentenceTransformer
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+
+
+logging.basicConfig(level=logging.INFO)
 
 data_list = []
 
+url = "https://search.shopping.naver.com/search/category/100005307"
+
+
 def crawl_page(url):
 
-    chrome_options = webdriver.ChromeOptions()
+    chrome_options = Options()
+
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
-    chromedriver_path = "../chrome/chromedriver"
-    driver = webdriver.Chrome(executable_path = chromedriver_path, options=chrome_options)
+    chrome_options.add_argument('--window-size=1280x1696')
+    chrome_options.add_argument('--hide-scrollbars')
+    chrome_options.add_argument('--enable-logging')
+    chrome_options.add_argument('--single-process')
+    chrome_options.add_argument('--ignore-certificate-errors')
+    chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
 
-    #driver = webdriver.Chrome(options=chrome_options)
+    service = ChromeService(ChromeDriverManager().install())
+
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    logging.info("crawling start!!")
 
     driver.implicitly_wait(3)
     driver.get(url)
 
     last_height = driver.execute_script("return document.body.scrollHeight")
 
-    for page_number in range(1, 7):  # Crawl up to 10 pages
+    for page_number in range(1, 7):  # 최대 10 페이지까지 크롤링
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)
         new_height = driver.execute_script("return document.body.scrollHeight")
@@ -64,7 +76,7 @@ def crawl_page(url):
         if new_height == last_height:
             break
 
-        # Click the next page button
+        # 다음 페이지 버튼 클릭
         next_page_selector = f"#content > div.style_content__xWg5l > div.pagination_pagination__fsf34 > div > a:nth-child({page_number + 1})"
         next_page_button = driver.find_element(By.CSS_SELECTOR, next_page_selector)
         next_page_button.click()
@@ -74,23 +86,6 @@ def crawl_page(url):
     driver.quit()
 
 
-def review_crawl():
-    for item in data_list:
-        link_url = item['product_link_url']
-
-        # 새로운 HTTP 요청을 보내서 리뷰 페이지를 크롤링
-        response = requests.get(link_url)
-        review_soup = BeautifulSoup(response.content, 'html.parser')
-        # 리뷰 아이템 선택
-        reviews = review_soup.select('p.reviewItems_text__XrSSf')
-        time.sleep(2)
-
-        # 리뷰를 해당 상품의 딕셔너리에 추가
-        item['reviews'] = reviews
-        time.sleep(1)
-
-
-# Initial URL
 
 def save_to_csv(data_list, file_path='output.csv'):
     with open(file_path, mode='w', encoding='utf-8', newline='') as file:
@@ -123,15 +118,12 @@ def review_crawl():
 
 
 
-initial_url = "https://search.shopping.naver.com/search/category/100005307"
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
 
-
-
 def crawl_product_info():
-    logging.info("crawling start")
+    logging.info("start download chrome driver")
     # 크롤링 시작
-    crawl_page(initial_url)
+    crawl_page(url)
     time.sleep(3)
 
     # 리뷰 크롤링

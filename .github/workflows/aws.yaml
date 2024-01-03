@@ -32,9 +32,9 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: crawling-image
-  ECS_SERVICE: jungjincheol-danawa
-  ECS_CLUSTER: jincheol-cluster
+  ECR_REPOSITORY: danawa
+  ECS_SERVICE: jc-danawa-Service
+  ECS_CLUSTER: danawa-cluster-jc
   ECS_TASK_DEFINITION: .aws/task-definition.json
   CONTAINER_NAME: danawa-container
 
@@ -61,12 +61,6 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Docker Setup QEMU
-      uses: docker/setup-qemu-action@v3
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image

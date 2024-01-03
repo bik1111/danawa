@@ -1,10 +1,13 @@
-# x86-64 Architecture
-FROM --platform=linux/amd64 python:3.9
+FROM python:3.9
 
-WORKDIR /app
+ENV DEBIAN_FRONTEND noninteractive
+
+WORKDIR /usr/src
+RUN apt-get update
+RUN pip install --upgrade pip
 
 RUN apt-get update
-RUN apt-get install wget
+RUN apt-get install wget -y
 RUN apt-get install -yqq unzip
 
 # Install Chrome
@@ -14,14 +17,17 @@ RUN apt -y install ./google-chrome-stable_current_amd64.deb
 # Install ChromeDriver.
 RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/` curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 RUN mkdir chrome
-RUN unzip /tmp/chromedriver.zip chromedriver -d /app/chrome
+RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/src/chrome
 
-COPY . .
+COPY app ./app
+
+COPY requirements.txt ./
+COPY .env ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app/crawling
-
 EXPOSE 3000
 
-CMD [ "python3", "app.py" ]
+WORKDIR /usr/src/app
+
+CMD ["python3", "main.py"]

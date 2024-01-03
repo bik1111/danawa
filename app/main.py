@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
-from crawling import crawl_product_info
-from loading_data_dynamo import load_data_from_dynamo
+from crawling.crawling_data import crawl_product_info
+from crawling.loading_data_dynamo import load_data_from_dynamo
 import logging
 
 app = Flask(__name__)

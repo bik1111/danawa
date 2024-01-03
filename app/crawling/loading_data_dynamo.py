@@ -40,7 +40,7 @@ def load_data_from_dynamo():
 
             #print(hf_embeddings)
 
-            if i < 10:  # 처음 3개 아이템만 넣기
+            if i < 10:
                 table.put_item(
                     Item = {
                         'laptop_id': i + 1,

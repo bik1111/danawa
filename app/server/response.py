@@ -4,7 +4,6 @@ import ast
 import boto3
 import numpy as np
 import logging
-import torch.nn.functional as F
 
 # DB 및 테이블 조회
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
