@@ -90,7 +90,7 @@ def crawl_page(url):
 
 def save_to_csv(data_list, file_path='output.csv'):
     with open(file_path, mode='w', encoding='utf-8', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=data_list.keys())
+        writer = csv.DictWriter(file, fieldnames=data_list[0].keys())
 
         # CSV 파일 헤더 쓰기
         writer.writeheader()
@@ -101,6 +101,7 @@ def save_to_csv(data_list, file_path='output.csv'):
 
 # ### 3-1) 리뷰 수집 및 한글만 남기기
 def review_crawl():
+    logging.info(data_list)
 
     for item in data_list:
         link_url = item['product_link_url']
