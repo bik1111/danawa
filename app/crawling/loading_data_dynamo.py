@@ -2,8 +2,10 @@ import decimal
 import time
 import boto3
 import csv
+from requests_aws4auth import AWS4Auth
 from decimal import Decimal
 import json
+
 
 
 def load_data_from_dynamo():
@@ -52,4 +54,4 @@ def load_data_from_dynamo():
 
 
 if __name__ == '__main__':
-    load_data_from_dynamo()
+    print(123)

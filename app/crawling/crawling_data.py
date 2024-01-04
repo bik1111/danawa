@@ -43,7 +43,7 @@ def crawl_page(url):
 
         logging.info("Crawling start!!")
 
-        driver.implicitly_wait(3)
+        driver.implicitly_wait(5)
         driver.get(url)
 
         last_height = driver.execute_script("return document.body.scrollHeight")
@@ -85,23 +85,12 @@ def crawl_page(url):
         logging.error(f"Crawling error: {str(e)}")
     finally:
         logging.info("Crawling end!!")
+        logging.info(data_list)
         driver.quit()
 
 
-def save_to_csv(data_list, file_path='output.csv'):
-    with open(file_path, mode='w', encoding='utf-8', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=data_list[0].keys())
 
-        # CSV 파일 헤더 쓰기
-        writer.writeheader()
-
-        # 데이터 쓰기
-        writer.writerows(data_list)
-
-
-# ### 3-1) 리뷰 수집 및 한글만 남기기
 def review_crawl():
-    logging.info(data_list)
 
     for item in data_list:
         link_url = item['product_link_url']
@@ -121,11 +110,19 @@ def review_crawl():
 
 
 
+def save_to_csv(data_list, file_path='output.csv'):
+    with open(file_path, mode='w', encoding='utf-8', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=data_list[0].keys())
+
+        # CSV 파일 헤더 쓰기
+        writer.writeheader()
+
+        # 데이터 쓰기
+        writer.writerows(data_list)
 
 
 
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
-
 def crawl_product_info():
     logging.info("start download chrome driver")
     # 크롤링 시작
