@@ -2,7 +2,6 @@ import decimal
 import time
 import boto3
 import csv
-from requests_aws4auth import AWS4Auth
 from decimal import Decimal
 import json
 
