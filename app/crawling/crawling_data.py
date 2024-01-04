@@ -11,7 +11,6 @@ import logging
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from sentence_transformers import SentenceTransformer
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
@@ -148,6 +147,7 @@ def crawl_product_info():
     sentence_embeddings = model.encode(df['reviews'].apply(lambda x: " ".join(x)).to_numpy().tolist())
 
     logging.info('start saving csv with embeddings vector')
+
     # Convert the embeddings to a list and assign to 'hf_embeddings' column
     df['hf_embeddings'] = sentence_embeddings.tolist()
 
