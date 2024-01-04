@@ -43,7 +43,7 @@ def crawl_page(url):
 
         logging.info("Crawling start!!")
 
-        driver.implicitly_wait(5)
+        driver.implicitly_wait(10)
         driver.get(url)
 
         last_height = driver.execute_script("return document.body.scrollHeight")
