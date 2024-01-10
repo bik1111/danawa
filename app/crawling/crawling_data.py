@@ -14,50 +14,42 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from sentence_transformers import SentenceTransformer
-from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
 
 logging.basicConfig(level=logging.INFO)
 
-data_list = []
 
 url = "https://search.shopping.naver.com/search/category/100005307"
+data_list = []
 
 
 def crawl_page(url):
+
+    driver = None
+
     try:
-
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "adProduct_info_area__dTSZf"))
-    )
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
+        service = Service()
+        chrome_options = webdriver.ChromeOptions()
+        #chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument('window-size=1920x1080')
-        chrome_options.add_argument('--hide-scrollbars')
-        chrome_options.add_argument('--enable-logging')
-        chrome_options.add_argument('--single-process')
-        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument(f'user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36')
 
+        logging.info("크롤링 시작!!")
 
-
-        logging.info("Crawling start!!")
+        driver = webdriver.Chrome(service=service, options=chrome_options)
 
         driver.implicitly_wait(10)
         driver.get(url)
+        logging.info(f"Current URL: {driver.current_url}")
 
         last_height = driver.execute_script("return document.body.scrollHeight")
 
-        for page_number in range(1, 7):  # 최대 10 페이지까지 크롤링
+        for page_number in range(1, 7):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)
             new_height = driver.execute_script("return document.body.scrollHeight")
 
             page_source = driver.page_source
@@ -81,19 +73,22 @@ def crawl_page(url):
             if new_height == last_height:
                 break
 
-            # 다음 페이지 버튼 클릭
             next_page_selector = f"#content > div.style_content__xWg5l > div.pagination_pagination__fsf34 > div > a:nth-child({page_number + 1})"
             next_page_button = driver.find_element(By.CSS_SELECTOR, next_page_selector)
             next_page_button.click()
-            time.sleep(2)
             last_height = new_height
 
     except Exception as e:
-        logging.error(f"Crawling error: {str(e)}")
+        logging.error(f"크롤링 오류: {str(e)}")
+
     finally:
-        logging.info("Crawling end!!")
-        logging.info(data_list)
-        driver.quit()
+        if driver is not None:
+            try:
+                driver.quit()
+                logging.info("드라이버 종료!")
+            except Exception as e:
+                logging.error(f"드라이버 종료 중 오류: {str(e)}")
+
 
 
 
