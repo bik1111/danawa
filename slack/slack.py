@@ -17,15 +17,10 @@ os.environ['AWS_DEFAULT_REGION'] = "ap-northeast-2"
 print("[INFO:] Connecting to cloud")
 
 
-
 app = App(token=config.bot_token)
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
 
-session = boto3.Session(
-    aws_access_key_id=config.AWS_ACCESS_KEY_ID, aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
-)
-dynamodb = session.client("dynamodb", region_name="ap-northeast-2")
-
+dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 table_name = 'danawa'
 table = dynamodb.Table(table_name)
 
