@@ -1,6 +1,7 @@
 import config
 from sentence_transformers import SentenceTransformer, util
 import sys
+import os
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from response import get_query_sim_top_k
@@ -10,6 +11,12 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+
+os.environ['AWS_PROFILE'] = "Profile1"
+os.environ['AWS_DEFAULT_REGION'] = "ap-northeast-2"
+print("[INFO:] Connecting to cloud")
+
+
 
 app = App(token=config.bot_token)
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
