@@ -65,6 +65,6 @@ jobs:
           --restart always \
           -e app_token=${{ secrets.APP_TOKEN }} \
           -e bot_token=${{ secrets.BOT_TOKEN }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
           -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           ${{ env.DOCKER_IMAGE }}:latest
