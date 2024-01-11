@@ -12,7 +12,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-os.environ['AWS_PROFILE'] = "Profile1"
+os.environ['AWS_PROFILE'] = "default"
 os.environ['AWS_DEFAULT_REGION'] = "ap-northeast-2"
 print("[INFO:] Connecting to cloud")
 
@@ -21,7 +21,11 @@ print("[INFO:] Connecting to cloud")
 app = App(token=config.bot_token)
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
 
-dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
+session = boto3.Session(
+    aws_access_key_id=config.AWS_ACCESS_KEY_ID, aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY
+)
+dynamodb = session.client("dynamodb", region_name="ap-northeast-2")
+
 table_name = 'danawa'
 table = dynamodb.Table(table_name)
 
