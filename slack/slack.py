@@ -20,6 +20,9 @@ print("[INFO:] Connecting to cloud")
 app = App(token=config.bot_token)
 model = SentenceTransformer("jhgan/ko-sroberta-multitask")
 
+session = boto3.Session(profile_name='default')
+client = session.client('dynamodb')
+
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 table_name = 'danawa'
 table = dynamodb.Table(table_name)
