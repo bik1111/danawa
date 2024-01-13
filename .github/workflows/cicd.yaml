@@ -62,6 +62,7 @@ jobs:
           docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.DOCKER_IMAGE }}:latest
           docker run -d -p 3000:3000 \
           --name slack_cicd \
+          --restart=always \
           -e app_token=${{ secrets.APP_TOKEN }} \
           -e bot_token=${{ secrets.BOT_TOKEN }} \
           -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
